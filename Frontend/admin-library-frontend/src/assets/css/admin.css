@@ -1,0 +1,15 @@
+.admin-layout {
+  background: #f9fafb;
+}
+
+.admin-content {
+  width: 100%;
+}
+
+.table {
+  font-size: 15px;
+}
+
+.card {
+  border-radius: 14px !important;
+}
