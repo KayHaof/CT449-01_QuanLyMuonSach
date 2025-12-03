@@ -133,11 +133,8 @@ const router = createRouter({
   routes,
 })
 
-// =============================================
-// 🔥 ADMIN AUTH GUARD
-// =============================================
 router.beforeEach((to, from, next) => {
-  const admin = JSON.parse(localStorage.getItem('admin'))
+  const admin = JSON.parse(localStorage.getItem('user'))
 
   // Nếu vào route admin mà không login
   if (to.path.startsWith('/admin') && to.path !== '/admin/login') {

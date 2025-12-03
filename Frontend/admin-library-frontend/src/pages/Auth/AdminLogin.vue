@@ -4,13 +4,6 @@
       <h1 class="auth-title">Đăng Nhập Quản Trị</h1>
       <p class="auth-subtitle">Dành cho Nhân viên & Admin</p>
 
-      <!-- ERROR MESSAGE -->
-      <div v-if="errorMessage" class="alert alert-danger alert-dismissible fade show">
-        <i class="fa-solid fa-circle-exclamation me-2"></i>
-        {{ errorMessage }}
-        <button type="button" class="btn-close" @click="errorMessage = ''"></button>
-      </div>
-
       <form @submit.prevent="handleLogin" class="mt-4">
         <div class="mb-3">
           <label class="auth-label">Tên đăng nhập</label>
@@ -52,6 +45,7 @@
 import { ref } from 'vue'
 import api from '../../composables/useApi'
 import { useRouter } from 'vue-router'
+import { toast } from '@/utils/toast' // ⭐ kiểu object: toast.success(), toast.error()
 
 const router = useRouter()
 
@@ -60,14 +54,12 @@ const adminData = ref({
   matKhau: '',
 })
 
-const errorMessage = ref('')
 const showPassword = ref(false)
 const isLoading = ref(false)
 
 const handleLogin = async () => {
   try {
     isLoading.value = true
-    errorMessage.value = ''
 
     const res = await api.post('/auth/login', {
       tenDangNhap: adminData.value.tenDangNhap,
@@ -75,22 +67,22 @@ const handleLogin = async () => {
     })
 
     if (!res.user) {
-      errorMessage.value = 'Sai thông tin đăng nhập!'
+      toast.error('Sai thông tin đăng nhập!')
       return
     }
 
     // ❗ Kiểm tra vai trò (Admin / NhanVien)
     if (res.user.vaiTro !== 'Admin' && res.user.vaiTro !== 'NhanVien') {
-      errorMessage.value = 'Bạn không có quyền truy cập hệ thống quản trị!'
+      toast.warning('Bạn không có quyền truy cập hệ thống quản trị!')
       return
     }
 
     localStorage.setItem('user', JSON.stringify(res.user))
 
-    // Chuyển về Dashboard Admin
+    toast.success('Đăng nhập thành công!')
     router.push('/admin')
   } catch (err) {
-    errorMessage.value = err.response?.data?.message || 'Đăng nhập thất bại'
+    toast.error(err.response?.data?.message || 'Đăng nhập thất bại')
   } finally {
     isLoading.value = false
   }
@@ -100,7 +92,6 @@ const handleLogin = async () => {
 <style scoped src="../../assets/css/login.css"></style>
 
 <style scoped>
-/* Tùy chỉnh riêng cho admin */
 .admin-auth {
   background: linear-gradient(135deg, #1e293b, #0f172a);
 }

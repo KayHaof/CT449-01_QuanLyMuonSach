@@ -38,9 +38,26 @@ const update = async (req, res) => {
     try {
         const { trangThai } = req.body;
 
+        const oldBorrow = await Borrow.findById(req.params.id);
+
         const borrow = await Borrow.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
         });
+
+        // Chỉ khi trạng thái cũ KHÁC "da_tra" và trạng thái mới LÀ "da_tra"
+        if (
+            oldBorrow.trangThai !== "da_tra" &&
+            req.body.trangThai === "da_tra"
+        ) {
+            const Book = require("../models/Sach");
+            await Book.findByIdAndUpdate(borrow.maSach, {
+                $inc: { soQuyen: 1 },
+            });
+        }
+
+        res.json(borrow);
+
+        res.json(borrow);
 
         if (!borrow) {
             return res.status(404).json({ message: "Borrow not found" });

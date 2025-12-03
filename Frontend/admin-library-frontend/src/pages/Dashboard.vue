@@ -35,8 +35,15 @@
             <td>{{ format(item.ngayMuon) }}</td>
             <td>
               <span
+                class="badge bg-info"
+                v-if="item.trangThai === 'Đăng ký mượn' || item.trangThai === 'dang_ky_muon'"
+              >
+                Đăng ký mượn
+              </span>
+
+              <span
                 class="badge bg-success"
-                v-if="item.trangThai === 'Đang mượn' || item.trangThai === 'dang_muon'"
+                v-else-if="item.trangThai === 'Đang mượn' || item.trangThai === 'dang_muon'"
               >
                 Đang mượn
               </span>

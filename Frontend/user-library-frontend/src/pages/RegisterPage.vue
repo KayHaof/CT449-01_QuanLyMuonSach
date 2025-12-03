@@ -86,9 +86,7 @@
           </button>
         </form>
 
-        <div class="divider d-flex align-items-center">
-          <span>Hoặc</span>
-        </div>
+        <div class="auth-divider"><span>Hoặc</span></div>
 
         <p class="text-center text-muted">
           Đã có tài khoản?

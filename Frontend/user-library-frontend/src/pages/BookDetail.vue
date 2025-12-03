@@ -141,9 +141,9 @@ const handleBorrow = async () => {
     await updateBookQuantity(bookDetail.value._id, updatedQty)
     bookDetail.value.soQuyen = updatedQty
 
-    toast.success('Mượn sách thành công!')
+    toast.success('Đăng ký mượn sách thành công!')
   } catch (err) {
-    toast.error('Lỗi khi mượn sách!')
+    toast.error('Lỗi khi đăng ký mượn sách!')
   }
 }
 

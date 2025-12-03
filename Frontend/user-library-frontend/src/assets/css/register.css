@@ -160,6 +160,27 @@ label.form-label {
   color: #4f46e5;
 }
 
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.6rem 0;
+}
+
+.auth-divider span {
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  color: #9ca3af;
+  background: #fff;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
 /* =====================================
    RESPONSIVE TỐI ƯU
 ===================================== */

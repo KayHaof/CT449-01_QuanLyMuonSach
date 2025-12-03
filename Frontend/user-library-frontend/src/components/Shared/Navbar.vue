@@ -99,12 +99,10 @@ const userAvatar = computed(
 )
 
 const handleLogout = () => {
-  if (confirm('Bạn có chắc muốn đăng xuất?')) {
     localStorage.removeItem('user')
     localStorage.removeItem('accessToken')
     user.value = null
     router.push('/auth/login')
-  }
 }
 </script>
 <style scoped>
