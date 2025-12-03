@@ -10,6 +10,14 @@
 
         <div class="stats-cards">
           <div class="stat-card">
+            <i class="fa-regular fa-hourglass-half"></i>
+            <div class="stat-info">
+              <span class="stat-label">Đang đăng ký mượn</span>
+              <span class="stat-value">{{ stats.waiting }}</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
             <i class="fa-solid fa-clock"></i>
             <div class="stat-info">
               <span class="stat-label">Đang mượn</span>
@@ -58,6 +66,7 @@
             <label class="form-label">Trạng thái</label>
             <select v-model="selectedStatus" class="form-select" @change="applyFilters">
               <option value="">Tất cả</option>
+              <option value="dang_ky_muon">Đang đăng ký mượn</option>
               <option value="dang_muon">Đang mượn</option>
               <option value="da_tra">Đã trả</option>
               <option value="tre_han">Trễ hạn</option>
@@ -103,7 +112,10 @@
 
                 <td>
                   <span class="status-badge" :class="'status-' + item.trangThai">
-                    <i v-if="item.trangThai === 'dang_muon'" class="fa-solid fa-clock"></i>
+                    <i
+                      v-if="item.trangThai === 'dang_muon' || item.trangThai === 'dang_ky_muon'"
+                      class="fa-solid fa-clock"
+                    ></i>
                     <i v-if="item.trangThai === 'da_tra'" class="fa-solid fa-circle-check"></i>
                     <i
                       v-if="item.trangThai === 'tre_han'"
@@ -326,6 +338,11 @@ const {
 }
 
 .status-dang_muon {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-dang_ky_muon {
   background: #d1ecf1;
   color: #0c5460;
 }

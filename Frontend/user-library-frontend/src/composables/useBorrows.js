@@ -14,6 +14,7 @@ export function useBorrows() {
   const itemsPerPage = 10
 
   const stats = ref({
+    waiting: 0,
     active: 0,
     returned: 0,
     overdue: 0,
@@ -42,6 +43,7 @@ export function useBorrows() {
   //  STATS
   // ============================
   const computeStats = () => {
+    stats.value.waiting = borrows.value.filter((b) => b.trangThai === 'dang_ky_muon').length
     stats.value.active = borrows.value.filter((b) => b.trangThai === 'dang_muon').length
     stats.value.returned = borrows.value.filter((b) => b.trangThai === 'da_tra').length
     stats.value.overdue = borrows.value.filter((b) => b.trangThai === 'tre_han').length
@@ -94,6 +96,7 @@ export function useBorrows() {
 
   const statusText = (s) =>
     ({
+      dang_ky_muon: 'Đang đăng ký mượn',
       dang_muon: 'Đang mượn',
       da_tra: 'Đã trả',
       tre_han: 'Trễ hạn',

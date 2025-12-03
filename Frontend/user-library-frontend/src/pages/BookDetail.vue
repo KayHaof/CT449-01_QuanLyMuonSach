@@ -13,9 +13,20 @@
             <img :src="getImageUrl(bookDetail.biaSach)" alt="Bìa sách" class="book-cover-image" />
           </div>
 
-          <button class="btn btn-primary btn-lg w-100 mt-4 mb-2" @click="handleBorrow">
-            <i class="fa-solid fa-book-open-reader"></i> Mượn sách
-          </button>
+          <!-- NÚT MƯỢN SÁCH / HẾT SÁCH -->
+          <div class="mt-4">
+            <button
+              v-if="bookDetail.soQuyen > 0"
+              class="btn btn-primary btn-lg w-100 borrow-btn"
+              @click="handleBorrow"
+            >
+              <i class="fa-solid fa-book-open-reader"></i> Mượn sách
+            </button>
+
+            <button v-else class="btn btn-secondary btn-lg w-100 out-of-stock-btn" disabled>
+              <i class="fa-solid fa-circle-xmark"></i> Hiện tại đã hết sách
+            </button>
+          </div>
         </div>
 
         <!-- RIGHT -->
@@ -81,8 +92,14 @@ import { useBookService } from '@/composables/useBooks'
 import { toast } from '@/utils/toast'
 
 const route = useRoute()
-const { bookDetail, getBookById, checkBorrowStatus, borrowBook, updateBookQuantity } =
-  useBookService()
+const {
+  bookDetail,
+  getBookById,
+  checkBorrowStatus,
+  borrowBook,
+  updateBookQuantity,
+  countActiveBorrows,
+} = useBookService()
 
 const user = JSON.parse(localStorage.getItem('user') || '{}')
 
@@ -100,10 +117,18 @@ const handleBorrow = async () => {
   }
 
   const isBorrowed = await checkBorrowStatus(user.refId, bookDetail.value._id)
-  console.log(bookDetail.value._id);
-  
+
   if (isBorrowed) {
     toast.error('Bạn đã mượn cuốn này và chưa trả. Không thể mượn thêm!')
+    return
+  }
+
+  // 0. Lấy số sách đang mượn
+  const result = await countActiveBorrows(user.refId)
+  const currentBorrows = result.data.count
+
+  if (currentBorrows >= 3) {
+    toast.error('Bạn chỉ được mượn tối đa 3 cuốn sách cùng lúc!')
     return
   }
 
@@ -138,6 +163,7 @@ const getImageUrl = (path) => (path ? `${BE_URL}${path}` : '/no-image.jpg')
   min-height: 100vh;
 }
 
+/* COVER */
 .book-cover-container {
   position: relative;
   border-radius: 12px;
@@ -152,21 +178,7 @@ const getImageUrl = (path) => (path ? `${BE_URL}${path}` : '/no-image.jpg')
   border-radius: 12px;
 }
 
-.rating-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
+/* BADGE */
 .category-badge {
   display: inline-block;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -178,6 +190,7 @@ const getImageUrl = (path) => (path ? `${BE_URL}${path}` : '/no-image.jpg')
   text-transform: uppercase;
 }
 
+/* TITLE */
 .book-title {
   font-size: 32px;
   font-weight: 700;
@@ -186,91 +199,8 @@ const getImageUrl = (path) => (path ? `${BE_URL}${path}` : '/no-image.jpg')
   margin-top: 16px;
 }
 
-.book-meta {
-  margin: 24px 0;
-  border-top: 1px solid #e0e0e0;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 16px 0;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 12px 0;
-}
-
-.meta-label {
-  color: #666;
-  font-weight: 600;
-  min-width: 100px;
-}
-
-.meta-value {
-  color: #333;
-  font-size: 15px;
-}
-
-.price-availability-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.price-card,
-.availability-card {
-  padding: 20px;
-  border-radius: 12px;
-  background: white;
-  border: 1px solid #e0e0e0;
-}
-
-.price-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.price-label,
-.availability-label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  opacity: 0.8;
-  margin-bottom: 8px;
-}
-
-.price-value {
-  font-size: 28px;
-  font-weight: 700;
-}
-
-.availability-value {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-}
-
-.availability-card.available {
-  border-color: #4caf50;
-  background: rgba(76, 175, 80, 0.05);
-}
-
-.availability-card.available .availability-value {
-  color: #2e7d32;
-}
-
-.availability-card.unavailable {
-  border-color: #f44336;
-  background: rgba(244, 67, 54, 0.05);
-}
-
-.availability-card.unavailable .availability-value {
-  color: #c62828;
-}
-
-.book-description,
-.book-details,
-.reader-reviews {
+/* DETAILS */
+.book-details {
   background: white;
   padding: 24px;
   border-radius: 12px;
@@ -282,12 +212,6 @@ const getImageUrl = (path) => (path ? `${BE_URL}${path}` : '/no-image.jpg')
   font-weight: 700;
   color: #1a1a1a;
   margin-bottom: 16px;
-}
-
-.description-text {
-  color: #555;
-  line-height: 1.7;
-  font-size: 15px;
 }
 
 .details-table {
@@ -318,61 +242,32 @@ const getImageUrl = (path) => (path ? `${BE_URL}${path}` : '/no-image.jpg')
   font-size: 15px;
 }
 
-.reviews-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+/* BUTTONS */
+.borrow-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  font-size: 18px;
+  padding: 14px;
+  border-radius: 12px;
+  transition: 0.2s;
 }
 
-.review-item {
-  padding: 16px;
-  background: #f9f9f9;
-  border-radius: 8px;
+.borrow-btn:hover {
+  opacity: 0.9;
 }
 
-.reviewer-info {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.reviewer-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-}
-
-.reviewer-details {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.reviewer-name {
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
-}
-
-.reviewer-rating {
-  color: #ffc107;
-  font-size: 12px;
-  display: flex;
-  gap: 2px;
-}
-
-.review-text {
+.out-of-stock-btn {
+  background: #ccc;
   color: #555;
-  font-size: 14px;
-  line-height: 1.6;
-  margin: 0;
+  border: none;
+  font-size: 18px;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: not-allowed;
 }
 
+/* MOBILE */
 @media (max-width: 768px) {
-  .price-availability-section {
-    grid-template-columns: 1fr;
-  }
-
   .book-title {
     font-size: 24px;
   }

@@ -99,6 +99,10 @@ export function useBookService() {
     }
   }
 
+  const countActiveBorrows = async (readerId) => {
+    return await axios.get(`/api/borrows/count/${readerId}`)
+  }
+
   const borrowBook = async (maDocGia, maSach) => {
     try {
       const payload = {
@@ -106,7 +110,7 @@ export function useBookService() {
         maDocGia,
         maSach,
         ngayMuon: new Date(),
-        trangThai: 'dang_muon',
+        trangThai: 'dang_ky_muon',
       }
 
       const res = await axios.post('/api/borrows', payload)
@@ -211,6 +215,7 @@ export function useBookService() {
     checkBorrowStatus,
     borrowBook,
     updateBookQuantity,
+    countActiveBorrows,
 
     // LIST PAGE
     searchQuery,
