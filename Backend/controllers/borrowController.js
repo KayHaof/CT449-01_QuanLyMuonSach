@@ -36,9 +36,31 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
     try {
+        const { trangThai } = req.body;
+
         const borrow = await Borrow.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
         });
+
+        if (!borrow) {
+            return res.status(404).json({ message: "Borrow not found" });
+        }
+
+        // 🔥 Emit realtime tới tất cả client đang mở trang BorrowHistory
+        if (global._io) {
+            global._io.emit("borrow_updated", borrow);
+        }
+
+        // 🔥 Nếu chuyển sang trễ hạn → FE hiểu là phải tạo phiếu phạt
+        if (trangThai === "tre_han") {
+            return res.json({
+                message:
+                    "Phiếu mượn đã chuyển sang trạng thái TRỄ HẠN. Độc giả cần nộp phạt.",
+                borrow,
+                requireFine: true,
+            });
+        }
+
         res.json(borrow);
     } catch (err) {
         res.status(400).json({ message: err.message });
@@ -67,4 +89,11 @@ const countActiveBorrows = async (req, res) => {
     }
 };
 
-module.exports = { getAll, getById, create, update, remove, countActiveBorrows };
+module.exports = {
+    getAll,
+    getById,
+    create,
+    update,
+    remove,
+    countActiveBorrows,
+};

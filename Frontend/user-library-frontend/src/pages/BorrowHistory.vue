@@ -1,4 +1,10 @@
 <template>
+  <div v-if="stats.overdue > 0" class="overdue-banner">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    Bạn đang có {{ stats.overdue }} sách trễ hạn. Tổng tiền phạt:
+    <b>{{ totalFine.toLocaleString('vi-VN') }}đ</b>
+  </div>
+
   <div class="borrow-history-container">
     <!-- Header -->
     <div class="history-header gradient-bg">
@@ -56,7 +62,7 @@
                 v-model="searchQuery"
                 type="text"
                 class="form-control"
-                placeholder="Tìm theo tên sách hoặc tác giả..."
+                placeholder="Tìm theo tên sách ..."
                 @input="applyFilters"
               />
             </div>
@@ -97,7 +103,7 @@
             </thead>
 
             <tbody>
-              <tr v-for="item in paginated" :key="item._id">
+              <tr v-for="item in paginated" :key="item._id" class="book-row">
                 <td class="ps-3">
                   <div class="book-info">
                     <img :src="getImage(item.maSach.biaSach)" class="book-thumbnail" />
@@ -166,6 +172,7 @@ const {
   formatDate,
   statusText,
   getDueDate,
+  totalFine,
 } = useBorrows()
 </script>
 
@@ -277,6 +284,38 @@ const {
   box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
 }
 
+.books-table {
+  margin-bottom: 0;
+}
+
+.books-table th,
+.books-table td {
+  padding: 1.1rem 1rem;
+  vertical-align: middle;
+  border-top: 1px solid #f1f3f5;
+}
+
+/* Cột 2, 3, 4: canh giữa */
+.books-table th:nth-child(2),
+.books-table th:nth-child(3),
+.books-table th:nth-child(4),
+.books-table td:nth-child(2),
+.books-table td:nth-child(3),
+.books-table td:nth-child(4) {
+  text-align: center;
+}
+
+/* Hàng mượn sách */
+.book-row:hover {
+  background: #f8f9fa;
+}
+
+.book-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .books-table-section {
   max-width: 1200px;
   margin: 0 auto;
@@ -367,5 +406,55 @@ const {
   font-size: 3rem;
   margin-bottom: 1rem;
   opacity: 0.5;
+}
+
+.overdue-banner {
+  background: #ffe5e5; /* đỏ nhạt */
+  color: #b00020; /* đỏ tươi cảnh báo */
+  padding: 1.25rem 1.75rem;
+  border-left: 6px solid #ff4d4d; /* viền đỏ */
+  font-weight: 600;
+  margin: 1.5rem auto;
+  max-width: 1200px;
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.15); /* bóng đỏ nhẹ */
+  animation: fadeIn 0.4s ease-out;
+}
+
+.overdue-banner i {
+  font-size: 1.8rem;
+  color: #d10000; /* đỏ đậm */
+}
+
+.overdue-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.overdue-text span {
+  font-size: 1rem;
+}
+
+.overdue-text b {
+  color: #d10000;
+  font-weight: 700;
+}
+
+/* Hiệu ứng fade-in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
