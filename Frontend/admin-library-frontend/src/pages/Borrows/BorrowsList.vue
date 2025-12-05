@@ -80,6 +80,11 @@ const pagedBorrows = computed(() => {
 const showFineForm = ref(false)
 const fineData = ref(null)
 
+// 👉 thêm đoạn này
+const generateFineCode = () => {
+  return 'PP' + Math.floor(100000 + Math.random() * 900000)
+}
+
 const openFineForm = (info) => {
   const user = JSON.parse(localStorage.getItem('user'))
   const staffId = user?.refId
@@ -91,25 +96,20 @@ const openFineForm = (info) => {
 
   const ngayMuon = new Date(info.ngayMuon)
   const ngayTra = new Date(info.ngayTra)
-
   const totalDays = Math.ceil((ngayTra - ngayMuon) / (1000 * 3600 * 24))
   const lateDays = Math.max(0, totalDays - 14)
 
   const base = 10000
   const fineAmount = Math.round(base * (Math.pow(1.05, lateDays) - 1))
 
-  const generateFineCode = () => 'PP' + Math.floor(100000 + Math.random() * 900000)
-
   fineData.value = {
-    maPhieuPhat: generateFineCode(),
+    maPhieuPhat: generateFineCode(), // ✔ OK
     maNVLap: staffId,
-    maMuonSach: info.maMuonSach,
+    maMuonSach: info._id,
     soTien: fineAmount,
     lyDo: `Trễ ${lateDays} ngày`,
     ngayLap: new Date().toISOString().substring(0, 10),
   }
-
-  delete fineData.value._id
 
   showFineForm.value = true
 }

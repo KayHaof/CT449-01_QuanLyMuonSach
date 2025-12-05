@@ -103,12 +103,12 @@ const save = async () => {
       updated = await createBorrow(form)
       toast.success('Tạo phiếu mới!')
     }
-
-    // Tạo phiếu phạt nếu trễ hạn
     if (form.trangThai === 'tre_han') {
-      const borrow = updated
+      const borrow = updated.borrow
+
       emit('create-fine', {
-        maMuonSach: borrow._id,
+        _id: borrow._id,
+        maMuon: borrow.maMuon,
         ngayMuon: borrow.ngayMuon,
         ngayTra: borrow.ngayTra,
       })

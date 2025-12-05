@@ -1,7 +1,6 @@
 <template>
   <AdminModal :title="editData ? 'Sửa sách' : 'Thêm sách'" @close="$emit('close')">
     <form @submit.prevent="save" class="book-form">
-      <!-- ===== INPUT CƠ BẢN ===== -->
       <AdminFormGroup label="Mã sách">
         <input class="form-control styled-input" v-model="form.maSach" required />
       </AdminFormGroup>
@@ -28,7 +27,6 @@
         <input type="number" class="form-control styled-input" v-model="form.namXuatBan" />
       </AdminFormGroup>
 
-      <!-- ===== ẢNH BÌA ===== -->
       <AdminFormGroup label="Ảnh bìa">
         <input
           type="file"
@@ -42,7 +40,6 @@
         </div>
       </AdminFormGroup>
 
-      <!-- ===== NXB ===== -->
       <AdminFormGroup label="Nhà xuất bản">
         <div class="select-row">
           <select class="form-select styled-input" v-model="form.maNhaXuatBan">
@@ -55,7 +52,6 @@
         </div>
       </AdminFormGroup>
 
-      <!-- ===== THỂ LOẠI ===== -->
       <AdminFormGroup label="Thể loại">
         <div class="select-row">
           <select class="form-select styled-input" v-model="form.maPhanLoai">
@@ -68,7 +64,6 @@
         </div>
       </AdminFormGroup>
 
-      <!-- ===== TÁC GIẢ ===== -->
       <AdminFormGroup label="Tác giả" data-full>
         <div class="select-row align-items-start">
           <div class="author-checkbox-list">
@@ -93,7 +88,6 @@
       <button class="btn-submit w-100 mt-3">Lưu sách</button>
     </form>
 
-    <!-- POPUP -->
     <AdminModal v-if="showPublisherForm" title="Thêm NXB" @close="closePublisher">
       <PublishersForm @saved="afterAddPublisher" @close="closePublisher" />
     </AdminModal>
@@ -134,12 +128,10 @@ const publishers = ref([])
 const categories = ref([])
 const authors = ref([])
 
-// ===== MODAL FLAGS =====
 const showPublisherForm = ref(false)
 const showCategoryForm = ref(false)
 const showAuthorForm = ref(false)
 
-// ===== IMAGE PREVIEW =====
 const previewImage = ref(null)
 const selectedImage = ref(null)
 
@@ -151,13 +143,11 @@ const onImageChange = (e) => {
 
 const BE_URL = 'http://localhost:8080'
 
-// chuẩn URL hình ảnh
 const getImageUrl = (path) => {
   if (!path) return '/no-image.jpg'
   return `${BE_URL}${path}`
 }
 
-// ===== FORM DATA =====
 const defaultForm = {
   maSach: '',
   tenSach: '',
@@ -178,7 +168,6 @@ onMounted(async () => {
   authors.value = await getAuthors()
 })
 
-// Khi sửa → load data
 watch(
   () => props.editData,
   (v) => {
@@ -203,19 +192,16 @@ watch(
 
 import { toast } from '@/utils/toast'
 
-// ===== SAU KHI THÊM MỚI NHÀ XUẤT BẢN =====
 const afterAddPublisher = async () => {
   publishers.value = await getPublishers()
   showPublisherForm.value = false
 }
 
-// ===== SAU KHI THÊM MỚI THỂ LOẠI =====
 const afterAddCategory = async () => {
   categories.value = await getCategories()
   showCategoryForm.value = false
 }
 
-// ===== SAU KHI THÊM MỚI TÁC GIẢ =====
 const afterAddAuthor = async () => {
   authors.value = await getAuthors()
   showAuthorForm.value = false
@@ -225,7 +211,6 @@ const closePublisher = () => (showPublisherForm.value = false)
 const closeCategory = () => (showCategoryForm.value = false)
 const closeAuthor = () => (showAuthorForm.value = false)
 
-// ===== LƯU SÁCH =====
 const save = async () => {
   try {
     const fd = new FormData()
@@ -269,7 +254,6 @@ const save = async () => {
   padding: 10px 2px;
 }
 
-/* INPUT + SELECT + FILE */
 .styled-input {
   border: 1.5px solid #c8b6ff;
   border-radius: 10px;
@@ -282,7 +266,6 @@ const save = async () => {
   box-shadow: 0 0 6px rgba(123, 92, 255, 0.35);
 }
 
-/* BUTTON THÊM MỚI */
 .btn-add {
   width: 38px;
   height: 38px;
@@ -300,7 +283,6 @@ const save = async () => {
   box-shadow: 0 4px 10px rgba(123, 92, 255, 0.4);
 }
 
-/* CHECKBOX LIST */
 .author-checkbox-list {
   flex: 1;
   border: 1px solid #c8b6ff;
@@ -312,14 +294,12 @@ const save = async () => {
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.06);
 }
 
-/* SELECT + BUTTON ALIGN */
 .select-row {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* HÌNH ẢNH PREVIEW */
 .img-preview-wrapper {
   margin-top: 10px;
   padding: 6px;
@@ -333,7 +313,6 @@ const save = async () => {
   border-radius: 8px;
 }
 
-/* SUBMIT BUTTON */
 .btn-submit {
   background: linear-gradient(135deg, #7b5cff, #5ac8fa);
   border: none;
